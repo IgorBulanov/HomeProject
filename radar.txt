@@ -1,0 +1,144 @@
+python3 -m radar.radar
+
+radar.main -> mainApp.Application(tk.Tk).run() -> mainloop()
+mainApp.Application(tk.Tk)-> MainMenu
+mainApp.MainTabsPane()
+mainApp.MainInteriorPane()
+mainApp.MainInteriorPane()->interiorLeftPane()  #create scrolled pane for items; create buttons pane;
+mainApp.MainInteriorPane()->interiorLeftPane->WindowItemSet #create object;
+mainApp.MainInteriorPane()->interiorRightPane() #for display items;
+WindowItemSet.WindowItemSet(ItemSet)            #create buttons: Reset; Auto Run; Add
+WindowItemSet.WindowItemSet->addItem            #create object: WindowItemTypeSelector(parent, self)
+ItemSet.ItemSet()                               #has self.unitSet list to store items;
+WindowItemTypeSelector.WindowItemTypeSelector() #select type of items, create items, pass argumets to items;
+WindowItemTypeSelector.WindowItemTypeSelector.selectItem
+    #create: WindowFileInputItem
+    #create: WindowFileOutputItem
+    #create:
+    #create:
+    #create: WindowTestSignalItem
+WindowBase4Item.WindowBase4Item(BaseItem)       #window image of BaseItem
+    onConfig
+    onSave
+WindowFileOutputItem.WindowFileOutputItem(WindowBase4Item)
+    onConfig
+    onSave
+WindowTestSignalItem.WindowTestSignalItem(WindowFileOutputItem)
+    onConfig
+        WindowBase4Item.onConfig
+        WindowConfigTestSignal                  #create object WindowConfigTestSignal;
+                                                #pass arg:
+                                                #winItemObject=self, itemSet=self.itemSet;
+WindowConfig.WindowConfig()
+    self.winItemObject                          #is reference to WindowBase4Item(BaseItem)
+
+
+
+
+
+
+
+
+
+
+
+
+===============================================================================
+-- 2018/05/29 --
+class hierarchy of radar project:
+BaseItem
+    FileType
+    DataSetType
+ItemSet
+    WindowItemSet
+
+'''
+Interactively validating Entry widget content in tkinter:
+use the validatecommand attribute of the widget
+
+    vcmd = (self.register(self.onValidate), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+    self.entry = tk.Entry(self, validate="key", validatecommand=vcmd)
+    def onValidate(self, d, i, P, s, S, v, V, W):
+        self.text.delete("1.0", "end")
+        self.text.insert("end","OnValidate:\n")
+        self.text.insert("end","d='%s'\n" % d)
+        self.text.insert("end","i='%s'\n" % i)
+        self.text.insert("end","P='%s'\n" % P)
+        self.text.insert("end","s='%s'\n" % s)
+        self.text.insert("end","S='%s'\n" % S)
+        self.text.insert("end","v='%s'\n" % v)
+        self.text.insert("end","V='%s'\n" % V)
+        self.text.insert("end","W='%s'\n" % W)
+        # Disallow anything but lowercase letters
+        if S == S.lower():
+            return True
+        else:
+            self.bell()
+            return False
+===
+other method:
+sv = StringVar()
+def validate_float(var):
+    new_value = var.get()
+    try:
+        new_value == '' or float(new_value)
+        validate.old_value = new_value
+    except:
+        var.set(validate.old_value)
+validate.old_value = ''
+
+# trace wants a callback with nearly useless parameters, fixing with lambda.
+sv.trace('w', lambda nm, idx, mode, var=sv: validate_float(var))
+ent = Entry(root, textvariable=sv)
+===
+используйте атрибут validatecommand виджета
+команда проверки должна возвращать либо True, либо False
+'''
+'''
+class FrameItemSet(tk.LabelFrame):
+    def __init__(self, parent, frameTitle, *args, **kw):
+#        tk.LabelFrame.__init__(self, parent, text=frameTitle, *args, **kw)
+        super(FrameItemSet, self).__init__(parent, text=frameTitle, *args, **kw)
+        self.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.config(relief=tk.RIDGE)
+        left = tk.Label(self, text="Inside the LabelFrame")
+        left.pack()
+
+class WindowItemSet(bts.ItemSet):
+    def __init__(self, parent, frameTitle, *args, **kw):
+        self.mainFrame = FrameItemSet(parent, frameTitle, *args, **kw)
+        self.mainFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        super(WindowItemSet, self).__init__()
+'''
+from class ItemSet
+    '''
+    def append(self, e):
+        if isinstance(e, bi.BaseItem):
+            self.unitSet.append(e)
+            return True
+        else:
+            return False
+    #get BaseItem item from ItemSet list
+    def get(self, i):
+        if self.len() > 0 and i<self.len():
+            return self.unitSet[i]
+        else:
+            return None
+    def len(self):
+        return len(self.unitSet)
+    # i - index of self.unitSet
+    def getTypeNameOf(self, i):
+        e = self.get(i)     # get item of self.unitSet list;
+        if e is None:       # item is not present;
+            return st.StaticType.UnkownType
+        if isinstance(e, bi.BaseItem):
+            return e.getTypeName()
+        else:
+            return None
+    '''
+root = tkinter.Tk()
+root.bind('<Configure>', size)
+
+
+
+
